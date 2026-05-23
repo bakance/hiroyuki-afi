@@ -1,0 +1,13 @@
+{
+  "name": "hiroyuki-afi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "warmup": "node scripts/generate-warmup.mjs",
+    "diagnose": "node scripts/diagnose-secrets.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
