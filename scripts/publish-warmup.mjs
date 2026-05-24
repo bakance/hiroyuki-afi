@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import {
   buildWarmupBody,
   currentSlot,
@@ -55,15 +56,27 @@ async function publish(platform, text) {
 }
 
 async function publishX(text) {
-  const token = process.env.X_OAUTH2_ACCESS_TOKEN;
-  if (!token) return { status: "skipped", reason: "X_OAUTH2_ACCESS_TOKEN missing" };
-  const response = await fetch("https://api.x.com/2/tweets", {
+  const credentials = {
+    apiKey: process.env.X_API_KEY || "",
+    apiSecret: process.env.X_API_SECRET || "",
+    accessToken: process.env.X_ACCESS_TOKEN || "",
+    accessSecret: process.env.X_ACCESS_SECRET || ""
+  };
+  if (!credentials.apiKey || !credentials.apiSecret || !credentials.accessToken || !credentials.accessSecret) {
+    return {
+      status: "skipped",
+      reason: "X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, or X_ACCESS_SECRET missing"
+    };
+  }
+  const url = "https://api.x.com/2/tweets";
+  const body = JSON.stringify({ text });
+  const response = await fetch(url, {
     method: "POST",
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization: oauth1Header("POST", url, credentials),
       "content-type": "application/json"
     },
-    body: JSON.stringify({ text })
+    body
   });
   await assertOk(response, "X post failed");
   return { status: "published" };
@@ -165,4 +178,36 @@ function redact(value) {
     .replace(/access_token=[^&\s"]+/g, "access_token=[redacted]")
     .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/g, "Bearer [redacted]")
     .replace(/"access_token"\s*:\s*"[^"]+"/g, '"access_token":"[redacted]"');
+}
+
+function oauth1Header(method, url, credentials) {
+  const params = {
+    oauth_consumer_key: credentials.apiKey,
+    oauth_nonce: crypto.randomBytes(16).toString("hex"),
+    oauth_signature_method: "HMAC-SHA1",
+    oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+    oauth_token: credentials.accessToken,
+    oauth_version: "1.0"
+  };
+  const signatureBase = [
+    method.toUpperCase(),
+    percentEncode(url),
+    percentEncode(
+      Object.entries(params)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value]) => `${percentEncode(key)}=${percentEncode(value)}`)
+        .join("&")
+    )
+  ].join("&");
+  const signingKey = `${percentEncode(credentials.apiSecret)}&${percentEncode(credentials.accessSecret)}`;
+  const signature = crypto.createHmac("sha1", signingKey).update(signatureBase).digest("base64");
+  return `OAuth ${Object.entries({ ...params, oauth_signature: signature })
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${percentEncode(key)}="${percentEncode(value)}"`)
+    .join(", ")}`;
+}
+
+function percentEncode(value) {
+  return encodeURIComponent(value)
+    .replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 }

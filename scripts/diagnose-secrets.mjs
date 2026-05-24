@@ -17,7 +17,7 @@ const groups = [
   {
     name: "x",
     requiredNow: false,
-    secrets: ["X_OAUTH2_ACCESS_TOKEN"]
+    secrets: ["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"]
   },
   {
     name: "pinterest",
