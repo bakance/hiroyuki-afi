@@ -35,7 +35,8 @@ for (const platform of platforms) {
       console.log(`${platform}: skipped (${result.reason})`);
     } else {
       published += 1;
-      console.log(`${platform}: published`);
+      const detail = result.detail ? ` (${result.detail})` : "";
+      console.log(`${platform}: published${detail}`);
     }
   } catch (error) {
     failed += 1;
@@ -51,7 +52,7 @@ if (failed > 0) {
 
 async function publish(platform, text) {
   if (dryRun) {
-    return { status: "published" };
+    return { status: "published", detail: "dry run" };
   }
   if (platform === "x") return publishX(text);
   if (platform === "threads") return publishThreads(text);
@@ -84,7 +85,12 @@ async function publishX(text) {
     body
   });
   await assertOk(response, "X post failed");
-  return { status: "published" };
+  const data = await response.json();
+  const tweetId = data?.data?.id;
+  return {
+    status: "published",
+    detail: tweetId ? `https://x.com/i/web/status/${tweetId}` : "X returned no post id"
+  };
 }
 
 async function publishThreads(text) {
@@ -98,10 +104,13 @@ async function publishThreads(text) {
   });
   const creationId = create.id;
   if (!creationId) throw new Error("Threads container creation returned no id");
-  await formPost(`https://graph.threads.net/v1.0/${userId}/threads_publish`, token, {
+  const published = await formPost(`https://graph.threads.net/v1.0/${userId}/threads_publish`, token, {
     creation_id: creationId
   });
-  return { status: "published" };
+  return {
+    status: "published",
+    detail: published.id ? `threads_post_id=${published.id}` : "Threads returned no post id"
+  };
 }
 
 async function publishPinterest(text) {
@@ -127,7 +136,11 @@ async function publishPinterest(text) {
     })
   });
   await assertOk(response, "Pinterest pin failed");
-  return { status: "published" };
+  const data = await response.json();
+  return {
+    status: "published",
+    detail: data.id ? `pinterest_pin_id=${data.id}` : "Pinterest returned no pin id"
+  };
 }
 
 async function publishInstagram(text) {
@@ -143,10 +156,13 @@ async function publishInstagram(text) {
   });
   const creationId = media.id;
   if (!creationId) throw new Error("Instagram media creation returned no id");
-  await formPost(`https://graph.facebook.com/${version}/${userId}/media_publish`, token, {
+  const published = await formPost(`https://graph.facebook.com/${version}/${userId}/media_publish`, token, {
     creation_id: creationId
   });
-  return { status: "published" };
+  return {
+    status: "published",
+    detail: published.id ? `instagram_media_id=${published.id}` : "Instagram returned no media id"
+  };
 }
 
 async function formPost(url, token, values) {
