@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       WARMUP_DAYS: "7"
       WARMUP_POSTS_PER_DAY: "3"
       WARMUP_PLATFORMS: x,pinterest,instagram,threads
