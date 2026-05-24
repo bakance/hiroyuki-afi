@@ -24,6 +24,7 @@ console.log(`Warm-up auto publish: date=${nowJst}, slot=${slot.label}, platforms
 
 let published = 0;
 let skipped = 0;
+let failed = 0;
 
 for (const platform of platforms) {
   const text = buildWarmupBody(platform, slot.label, dayIndex);
@@ -37,12 +38,16 @@ for (const platform of platforms) {
       console.log(`${platform}: published`);
     }
   } catch (error) {
+    failed += 1;
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`${platform}: ${redact(message)}`);
+    console.log(`${platform}: failed (${redact(message)})`);
   }
 }
 
-console.log(`Auto publish complete: published=${published}, skipped=${skipped}, dryRun=${dryRun}`);
+console.log(`Auto publish complete: published=${published}, skipped=${skipped}, failed=${failed}, dryRun=${dryRun}`);
+if (failed > 0) {
+  process.exitCode = 1;
+}
 
 async function publish(platform, text) {
   if (dryRun) {
