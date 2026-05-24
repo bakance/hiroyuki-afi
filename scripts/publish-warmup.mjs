@@ -28,6 +28,12 @@ let failed = 0;
 
 for (const platform of platforms) {
   const text = buildWarmupBody(platform, slot.label, dayIndex);
+  if (dryRun) {
+    console.log(`${platform}: preview`);
+    console.log("---");
+    console.log(text);
+    console.log("---");
+  }
   try {
     const result = await publish(platform, text);
     if (result.status === "skipped") {

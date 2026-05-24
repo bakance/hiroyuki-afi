@@ -30,6 +30,16 @@ Auto Warmup Post > Run workflow
 
 XでOAuth 1.0a権限エラーが出た場合は、X Developer Appを `Read and write` に変更し、Access Token / Access Token Secretを再生成してください。詳しくは `docs/github-secrets-cloud-runbook.md` を確認してください。
 
+## 投稿文章ルール
+
+現在の投稿文章ルールは以下です。
+
+```text
+docs/content-rules.md
+```
+
+投稿前に文章だけ確認したい場合は、`Auto Warmup Post` を `dry_run=true` で実行します。
+
 ## Secretについて
 
 APIキーやSecret値は、このリポジトリの `Settings > Secrets and variables > Actions` にだけ入力します。
