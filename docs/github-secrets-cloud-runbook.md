@@ -94,6 +94,23 @@ Your client app is not configured with the appropriate oauth1 app permissions fo
 
 重要: 権限変更前に作ったAccess Tokenは、Read and writeに自動更新されません。必ず再生成してください。
 
+Xで以下のエラーが出た場合は、OAuth 1.0aの4つの値の組み合わせが不正です。
+
+```text
+X post failed: 401 Unauthorized
+```
+
+確認すること:
+
+1. `X_API_KEY` に入れるのは API Key / Consumer Key
+2. `X_API_SECRET` に入れるのは API Key Secret / Consumer Secret
+3. `X_ACCESS_TOKEN` に入れるのは Access Token
+4. `X_ACCESS_SECRET` に入れるのは Access Token Secret
+5. `Client ID` や `Client Secret` は入れない
+6. 4つの値は必ず同じX Developer Appから発行されたものにする
+7. App permissionsを変更した後は、Access Token と Access Token Secret を再生成する
+8. 値の前後に空白、引用符、改行を入れない
+
 Pinterest / Instagram は画像URLが必要です。自動投稿する場合は以下も必要です。
 
 ```text
@@ -102,6 +119,14 @@ PINTEREST_BOARD_ID
 INSTAGRAM_ACCESS_TOKEN
 INSTAGRAM_USER_ID
 ```
+
+Threadsで以下のエラーが出た場合は、`THREADS_USER_ID` が違う、またはアクセストークンが対象Threadsアカウントに紐付いていない状態です。
+
+```text
+Unsupported post request. Object with ID ... does not exist, cannot be loaded due to missing permissions, or does not support this operation
+```
+
+現在の実装では、可能な場合は `THREADS_ACCESS_TOKEN` からユーザーIDを自動解決します。それでも失敗する場合は、Threads API用に発行したアクセストークンと対象アカウントの紐付けを確認してください。`THREADS_USER_ID` を手入力する場合は、InstagramのIDではなくThreads API上のユーザーIDを入れます。
 
 Repository variables に以下を入れます。
 
