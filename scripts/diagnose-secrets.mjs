@@ -36,11 +36,23 @@ const groups = [
   }
 ];
 
+const variables = [
+  "AUTO_PUBLISH_PLATFORMS",
+  "WARMUP_START_DATE",
+  "WARMUP_MEDIA_URL",
+  "META_API_VERSION"
+];
+
 for (const group of groups) {
   console.log(`\n[${group.name}]`);
   for (const name of group.secrets) {
     console.log(`${name}: ${process.env[name] ? "configured" : "missing"}`);
   }
+}
+
+console.log("\n[variables]");
+for (const name of variables) {
+  console.log(`${name}: ${process.env[name] ? "configured" : "missing"}`);
 }
 
 console.log("\nSecret values are never printed by this diagnostic.");

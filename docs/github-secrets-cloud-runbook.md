@@ -51,6 +51,38 @@ THREADS_ACCESS_TOKEN
 THREADS_USER_ID
 ```
 
+初期の自動投稿では、まず以下だけで開始できます。
+
+```text
+X_OAUTH2_ACCESS_TOKEN
+THREADS_ACCESS_TOKEN
+THREADS_USER_ID
+```
+
+Pinterest / Instagram は画像URLが必要です。自動投稿する場合は以下も必要です。
+
+```text
+PINTEREST_ACCESS_TOKEN
+PINTEREST_BOARD_ID
+INSTAGRAM_ACCESS_TOKEN
+INSTAGRAM_USER_ID
+```
+
+Repository variables に以下を入れます。
+
+```text
+AUTO_PUBLISH_PLATFORMS=x,threads
+WARMUP_START_DATE=2026-05-24
+```
+
+Pinterest / Instagram も自動化する場合だけ、公開HTTPS画像URLを入れます。
+
+```text
+AUTO_PUBLISH_PLATFORMS=x,threads,pinterest,instagram
+WARMUP_MEDIA_URL=https://...
+META_API_VERSION=v24.0
+```
+
 ## 初期ワークフロー
 
 最初に使うのは以下です。
@@ -68,6 +100,28 @@ Actions > Warmup Draft Generator > Run workflow
 ```
 
 実行後、`warmup-manual-posts` というArtifactが生成されます。中の `manual-posts.md` を開き、投稿本文をコピーして各SNSに手動投稿してください。
+
+## 自動投稿ワークフロー
+
+自動投稿は以下です。
+
+```text
+Actions > Auto Warmup Post
+```
+
+スケジュール:
+
+- 08:20 JST
+- 17:40 JST
+- 21:15 JST
+
+標準対象:
+
+```text
+X / Threads
+```
+
+Pinterest / Instagram は、画像投稿が前提なので `WARMUP_MEDIA_URL` を設定した場合だけ有効化します。
 
 ## 接続診断
 

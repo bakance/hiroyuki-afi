@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "warmup": "node scripts/generate-warmup.mjs",
+    "post:warmup": "node scripts/publish-warmup.mjs",
     "diagnose": "node scripts/diagnose-secrets.mjs"
   },
   "engines": {

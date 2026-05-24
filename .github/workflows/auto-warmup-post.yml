@@ -1,0 +1,53 @@
+name: Auto Warmup Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "morning, evening, or night"
+        required: true
+        default: "morning"
+        type: choice
+        options:
+          - morning
+          - evening
+          - night
+      dry_run:
+        description: "Run without publishing"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+  schedule:
+    - cron: "20 23 * * *"
+    - cron: "40 8 * * *"
+    - cron: "15 12 * * *"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      AUTO_PUBLISH_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+      AUTO_PUBLISH_PLATFORMS: ${{ vars.AUTO_PUBLISH_PLATFORMS || 'x,threads' }}
+      WARMUP_START_DATE: ${{ vars.WARMUP_START_DATE }}
+      WARMUP_SLOT: ${{ inputs.slot }}
+      WARMUP_MEDIA_URL: ${{ vars.WARMUP_MEDIA_URL }}
+      X_OAUTH2_ACCESS_TOKEN: ${{ secrets.X_OAUTH2_ACCESS_TOKEN }}
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+      PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
+      PINTEREST_BOARD_ID: ${{ secrets.PINTEREST_BOARD_ID }}
+      INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+      INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+      META_API_VERSION: ${{ vars.META_API_VERSION || 'v24.0' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Publish warm-up post
+        run: npm run post:warmup
