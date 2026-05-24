@@ -4,21 +4,31 @@
 
 ## 現在のフェーズ
 
-- APIキー不要
 - アフィリエイトリンクなし
-- 自動投稿なし
-- 1日3回のウォームアップ投稿文をGitHub Actionsで生成
-- 投稿は手動でコピーして実行
+- X / Threads の自動ウォームアップ投稿に対応
+- 1日3回のウォームアップ投稿をGitHub Actionsで実行
+- 手動投稿用の投稿文生成も利用可能
+- Pinterest / Instagram は画像URL設定後に有効化
 
 ## 最初に使うもの
 
-GitHubの `Actions` から以下を実行します。
+自動投稿前の確認には、GitHubの `Actions` から以下を実行します。
 
 ```text
 Warmup Draft Generator > Run workflow
 ```
 
 生成後、Artifactの `warmup-manual-posts` を開き、`manual-posts.md` の投稿文を使います。
+
+自動投稿は以下を実行します。
+
+```text
+Auto Warmup Post > Run workflow
+```
+
+最初は `dry_run=true` で確認し、問題なければ `dry_run=false` で実投稿します。
+
+XでOAuth 1.0a権限エラーが出た場合は、X Developer Appを `Read and write` に変更し、Access Token / Access Token Secretを再生成してください。詳しくは `docs/github-secrets-cloud-runbook.md` を確認してください。
 
 ## Secretについて
 

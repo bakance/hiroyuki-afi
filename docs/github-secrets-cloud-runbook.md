@@ -74,6 +74,26 @@ X_ACCESS_TOKEN
 X_ACCESS_SECRET
 ```
 
+Xで以下のエラーが出た場合は、Secretの名前ではなくX Developer App側の権限設定が原因です。
+
+```text
+Your client app is not configured with the appropriate oauth1 app permissions for this endpoint.
+```
+
+対応手順:
+
+1. X Developer Portalで対象Appを開く
+2. User authentication settings を開く
+3. OAuth 1.0a / User context を有効にする
+4. App permissions を Read and write にする
+5. Save する
+6. Access Token と Access Token Secret を再生成する
+7. GitHub Secrets の `X_ACCESS_TOKEN` と `X_ACCESS_SECRET` を新しい値に差し替える
+8. `Actions > Secret Diagnose` を実行する
+9. `Actions > Auto Warmup Post` を `dry_run=false` で再実行する
+
+重要: 権限変更前に作ったAccess Tokenは、Read and writeに自動更新されません。必ず再生成してください。
+
 Pinterest / Instagram は画像URLが必要です。自動投稿する場合は以下も必要です。
 
 ```text
