@@ -40,6 +40,15 @@ docs/content-rules.md
 
 投稿前に文章だけ確認したい場合は、`Auto Warmup Post` を `dry_run=true` で実行します。
 
+## 運用資料
+
+```text
+docs/profile-pack.md
+docs/api-checklist.md
+docs/operation-and-monetization-plan.md
+docs/github-secrets-cloud-runbook.md
+```
+
 ## Secretについて
 
 APIキーやSecret値は、このリポジトリの `Settings > Secrets and variables > Actions` にだけ入力します。
