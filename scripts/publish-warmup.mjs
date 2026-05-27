@@ -103,6 +103,9 @@ async function publishX(text) {
     }
 
     const message = await responseErrorMessage(response, `X post failed (${new URL(url).hostname})`);
+    if (response.status === 403 && isDuplicateContentError(message)) {
+      return { status: "skipped", reason: "X rejected duplicate content" };
+    }
     if (response.status !== 401) throw new Error(message);
     lastUnauthorized = message;
   }
@@ -240,6 +243,10 @@ function redact(value) {
     .replace(/access_token=[^&\s"]+/g, "access_token=[redacted]")
     .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/g, "Bearer [redacted]")
     .replace(/"access_token"\s*:\s*"[^"]+"/g, '"access_token":"[redacted]"');
+}
+
+function isDuplicateContentError(message) {
+  return message.toLowerCase().includes("duplicate content");
 }
 
 function oauth1Header(method, url, credentials) {
